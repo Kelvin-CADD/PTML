@@ -2,11 +2,17 @@
 """Contract tests for the DENS7 feature module and frozen checkpoints."""
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
 import joblib
 import numpy as np
 import pytest
 
-from dens7 import FEATURE_NAMES, dens7_from_peaks
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from dens7 import FEATURE_NAMES, dens7_from_peaks  # noqa: E402
 
 
 def test_feature_contract():
@@ -31,7 +37,7 @@ def test_too_few_peaks():
 
 
 def test_checkpoint_loads_and_predicts():
-    ckpt = joblib.load("checkpoints/dens7_rf_nist.joblib")
+    ckpt = joblib.load(ROOT / "checkpoints" / "dens7_rf_nist.joblib")
     assert ckpt["feature_names"] == FEATURE_NAMES
     assert ckpt["decision_threshold"] == 0.5
     model = ckpt["model"]
