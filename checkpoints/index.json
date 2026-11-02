@@ -1,0 +1,44 @@
+{
+  "primary": "dens7_rf_nist.joblib",
+  "checkpoints": [
+    {
+      "file": "dens7_rf_prior.joblib",
+      "name": "dens7_rf_prior",
+      "role": "reference",
+      "n_spectra": 2620,
+      "n_negative": 1948,
+      "auc_mean": 0.972831281161481,
+      "sha256": "4e63e2009745558a78db53b6bef007040ecb11bb444773f7746f5c56691dcd2d",
+      "auc_note": "original 5-fold DENS7 RF run"
+    },
+    {
+      "file": "dens7_rf_nist.joblib",
+      "name": "dens7_rf_nist",
+      "role": "primary",
+      "n_spectra": 1353,
+      "n_negative": 681,
+      "auc_mean": 0.9572713446612126,
+      "sha256": "60365c8f7d0c3ed1c63c1a6a9708877c5547bdfa8ff90830e215b0bc27950949"
+    },
+    {
+      "file": "dens7_rf_gnps_mona.joblib",
+      "name": "dens7_rf_gnps_mona",
+      "role": "extended-domain",
+      "n_spectra": 1772,
+      "n_negative": 1100,
+      "auc_mean": 0.9022011634199133,
+      "sha256": "38323c75484a7f0731c135c8cf7d33fb788b09c6e3e779706ef1ac7501983cbd"
+    }
+  ],
+  "feature_names": [
+    "n_clean",
+    "n_above_1pct_top50",
+    "gini_top50",
+    "effective_peaks_entropy",
+    "median_mz_gap",
+    "top1_share_top50",
+    "top5_share_top50"
+  ],
+  "threshold": 0.5,
+  "note": "NIST and GNPS+MoNA were trained separately and must not be merged."
+}

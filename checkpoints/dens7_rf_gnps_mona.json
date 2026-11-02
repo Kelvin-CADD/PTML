@@ -1,0 +1,117 @@
+{
+  "schema_version": "1.0",
+  "checkpoint_name": "dens7_rf_gnps_mona",
+  "role": "extended-domain",
+  "created": "2026-11-02",
+  "positive_class": "PT (polyether triterpenoid)",
+  "negative_class": "non-PT",
+  "decision_threshold": 0.5,
+  "feature_names": [
+    "n_clean",
+    "n_above_1pct_top50",
+    "gini_top50",
+    "effective_peaks_entropy",
+    "median_mz_gap",
+    "top1_share_top50",
+    "top5_share_top50"
+  ],
+  "feature_notes": {
+    "n_clean": "log1p applied before fitting; stored as raw peak count in this manifest.",
+    "n_above_1pct_top50": "count among top-50 peaks",
+    "gini_top50": "Gini of top-50 intensity shares",
+    "effective_peaks_entropy": "exp(Shannon entropy) of top-50 shares",
+    "median_mz_gap": "median adjacent m/z gap among top-50 peaks (Da)",
+    "top1_share_top50": "share of the most intense peak",
+    "top5_share_top50": "share of the five most intense peaks"
+  },
+  "preprocessing": {
+    "peak_filter": "finite m/z and intensity; intensity > 0",
+    "duplicate_mz": "sum intensity for exactly equal m/z",
+    "precursor_removal": "precursor and +1/+2 isotopes, +/-10 ppm",
+    "top_n": 50,
+    "min_cleaned_peaks": 50,
+    "intensity_normalization": "divide by total cleaned intensity before top-50, then sqrt",
+    "feature_input": "raw DENS7 values with log1p(n_clean) only"
+  },
+  "model_type": "RandomForestClassifier",
+  "model_params": {
+    "n_estimators": 400,
+    "max_depth": 4,
+    "min_samples_leaf": 5,
+    "class_weight": "balanced",
+    "random_state": 0,
+    "n_jobs": 1
+  },
+  "training": {
+    "dataset": "GNPS+MoNA extended hard negatives (2026-10-29)",
+    "n_spectra": 1772,
+    "n_pt": 672,
+    "n_negative": 1100,
+    "negative_structures": 348,
+    "pt_structures": 672,
+    "ratio_neg_to_pos": 1.64,
+    "negative_classes": {
+      "pentacyclic_triterpenoid": 704,
+      "tetracyclic_triterpenoid": 191,
+      "polyether": 24,
+      "macrocyclic_polyketide": 66,
+      "very_long_fatty_chain": 114,
+      "linear_polyketide": 1
+    },
+    "adducts": {
+      "[M+H]+": 696,
+      "[M+Na]+": 404
+    },
+    "metadata": "ESI-known 271; ion-source field missing 829; CE 20-60 eV"
+  },
+  "cross_validation": {
+    "scheme": "5-fold x 5-repeat StratifiedGroupKFold, grouped by SMILES",
+    "auc_mean": 0.9022011634199133,
+    "auc_sd": 0.0017448833050085905,
+    "ap_mean": 0.936293479237345,
+    "ap_sd": 0.0011434595420462613,
+    "accuracy_mean": 0.8152370203160271,
+    "accuracy_sd": 0.00152474673658084,
+    "pt_recall_mean": 0.8196428571428571,
+    "neg_specificity_mean": 0.8125454545454545,
+    "sensitivity": {
+      "h_only_696": 0.935,
+      "esi_known_271": 0.947,
+      "five_hard_classes_985": 0.894
+    }
+  },
+  "error_profile_at_0.5": {
+    "false_positive_rate": 0.181,
+    "false_positive_count": 199,
+    "negative_count": 1100,
+    "by_class": {
+      "pentacyclic_triterpenoid": "147/704 (20.9%); glycosylated 138/533 (25.9%)",
+      "tetracyclic_triterpenoid": "25/191 (13.1%)",
+      "polyether": "6/24 (25.0%)",
+      "macrocyclic_polyketide": "18/66 (27.3%)",
+      "very_long_fatty_chain": "3/114 (2.6%)",
+      "linear_polyketide": "0/1"
+    },
+    "note": "Mean OOF probability at threshold 0.5."
+  },
+  "intended_use": [
+    "Extended-domain model for broader chemical coverage and GNPS/MoNA-like data.",
+    "Stress test of the DENS7 model under incomplete metadata and more diverse negatives."
+  ],
+  "limitations": [
+    "18.1% false positives overall; glycosylated pentacyclic triterpenoids are the main confounder (25.9%).",
+    "829/1,100 negatives lack the ion-source field; 404 are [M+Na]+ adducts.",
+    "Cross-library peak-density scales differ; do not compare raw DENS7 values across checkpoints.",
+    "Do not merge this checkpoint with the NIST checkpoint."
+  ],
+  "environment": {
+    "python": "3.12.14",
+    "scikit_learn": "1.5.2",
+    "numpy": "2.3.5",
+    "joblib": "1.6.0"
+  },
+  "data_redistribution": "Training spectra are not included. NIST, GNPS and MoNA data remain subject to their own terms.",
+  "checkpoint_file": "dens7_rf_gnps_mona.joblib",
+  "sha256": "38323c75484a7f0731c135c8cf7d33fb788b09c6e3e779706ef1ac7501983cbd",
+  "file_size_bytes": 398264
+}

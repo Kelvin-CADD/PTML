@@ -1,0 +1,22 @@
+# raw spectra and project run outputs must never be committed
+data/
+runs/
+*.mgf
+*.mzML
+*.mzXML
+*.raw
+*.zip
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

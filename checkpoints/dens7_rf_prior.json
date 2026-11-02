@@ -1,0 +1,99 @@
+{
+  "schema_version": "1.0",
+  "checkpoint_name": "dens7_rf_prior",
+  "role": "reference",
+  "created": "2026-11-02",
+  "positive_class": "PT (polyether triterpenoid)",
+  "negative_class": "non-PT",
+  "decision_threshold": 0.5,
+  "feature_names": [
+    "n_clean",
+    "n_above_1pct_top50",
+    "gini_top50",
+    "effective_peaks_entropy",
+    "median_mz_gap",
+    "top1_share_top50",
+    "top5_share_top50"
+  ],
+  "feature_notes": {
+    "n_clean": "log1p applied before fitting; stored as raw peak count in this manifest.",
+    "n_above_1pct_top50": "count among top-50 peaks",
+    "gini_top50": "Gini of top-50 intensity shares",
+    "effective_peaks_entropy": "exp(Shannon entropy) of top-50 shares",
+    "median_mz_gap": "median adjacent m/z gap among top-50 peaks (Da)",
+    "top1_share_top50": "share of the most intense peak",
+    "top5_share_top50": "share of the five most intense peaks"
+  },
+  "preprocessing": {
+    "peak_filter": "finite m/z and intensity; intensity > 0",
+    "duplicate_mz": "sum intensity for exactly equal m/z",
+    "precursor_removal": "precursor and +1/+2 isotopes, +/-10 ppm",
+    "top_n": 50,
+    "min_cleaned_peaks": 50,
+    "intensity_normalization": "divide by total cleaned intensity before top-50, then sqrt",
+    "feature_input": "raw DENS7 values with log1p(n_clean) only"
+  },
+  "model_type": "RandomForestClassifier",
+  "model_params": {
+    "n_estimators": 400,
+    "max_depth": 4,
+    "min_samples_leaf": 5,
+    "class_weight": "balanced",
+    "random_state": 0,
+    "n_jobs": 1
+  },
+  "training": {
+    "dataset": "prior in-house set (2026-10-27)",
+    "n_spectra": 2620,
+    "n_pt": 672,
+    "n_negative": 1948,
+    "negative_composition": "30 jht + 1,918 80MCI high-precursor spectra",
+    "negative_structures": "not available for all negative spectra",
+    "pt_structures": "672 (one spectrum per compound)",
+    "ratio_neg_to_pos": 2.9,
+    "notes": "Ordinary negatives, not selected as structural analogues of PT."
+  },
+  "cross_validation": {
+    "auc": 0.9727444815195072,
+    "ap": 0.9125288671606282,
+    "accuracy": 0.9206106870229007,
+    "pt_recall": 0.9389880952380952,
+    "neg_specificity": 0.9142710472279261,
+    "pt_correct": 631,
+    "pt_to_neg": 41,
+    "neg_correct": 1781,
+    "neg_to_pt": 167,
+    "n": 2620,
+    "scheme": "5-fold stratified CV, single repeat, random_state=20261027",
+    "reported_auc_mean": 0.972831281161481,
+    "reported_auc_sd": 0.0063491830503267085,
+    "reported_ap_mean": 0.9138800852,
+    "reported_ap_sd": 0.01851183607,
+    "note": "The reported values come from the original 5-fold DENS7 RF run; the fresh OOF pass above reproduces the same pipeline."
+  },
+  "error_profile_at_0.5": {
+    "false_positive_rate": 0.0857,
+    "false_positive_count": 167,
+    "negative_count": 1948,
+    "note": "Threshold 0.5 on OOF probabilities; class breakdown not available for the prior negatives."
+  },
+  "intended_use": [
+    "Reference model showing the DENS7 signal on the original in-house negative sources.",
+    "Useful for comparing against the NIST and GNPS hard-negative checkpoints."
+  ],
+  "limitations": [
+    "Negatives are ordinary in-house spectra, not structural analogues; performance is expected to be optimistic for hard-negative screening.",
+    "The original CV was stratified by spectrum, not grouped by structure for the negatives.",
+    "Do not use this checkpoint as the primary screening model."
+  ],
+  "environment": {
+    "python": "3.12.14",
+    "scikit_learn": "1.5.2",
+    "numpy": "2.3.5",
+    "joblib": "1.6.0"
+  },
+  "data_redistribution": "Training spectra are not included. NIST, GNPS and MoNA data remain subject to their own terms.",
+  "checkpoint_file": "dens7_rf_prior.joblib",
+  "sha256": "4e63e2009745558a78db53b6bef007040ecb11bb444773f7746f5c56691dcd2d",
+  "file_size_bytes": 400236
+}

@@ -1,0 +1,106 @@
+{
+  "schema_version": "1.0",
+  "checkpoint_name": "dens7_rf_nist",
+  "role": "primary",
+  "created": "2026-11-02",
+  "positive_class": "PT (polyether triterpenoid)",
+  "negative_class": "non-PT",
+  "decision_threshold": 0.5,
+  "feature_names": [
+    "n_clean",
+    "n_above_1pct_top50",
+    "gini_top50",
+    "effective_peaks_entropy",
+    "median_mz_gap",
+    "top1_share_top50",
+    "top5_share_top50"
+  ],
+  "feature_notes": {
+    "n_clean": "log1p applied before fitting; stored as raw peak count in this manifest.",
+    "n_above_1pct_top50": "count among top-50 peaks",
+    "gini_top50": "Gini of top-50 intensity shares",
+    "effective_peaks_entropy": "exp(Shannon entropy) of top-50 shares",
+    "median_mz_gap": "median adjacent m/z gap among top-50 peaks (Da)",
+    "top1_share_top50": "share of the most intense peak",
+    "top5_share_top50": "share of the five most intense peaks"
+  },
+  "preprocessing": {
+    "peak_filter": "finite m/z and intensity; intensity > 0",
+    "duplicate_mz": "sum intensity for exactly equal m/z",
+    "precursor_removal": "precursor and +1/+2 isotopes, +/-10 ppm",
+    "top_n": 50,
+    "min_cleaned_peaks": 50,
+    "intensity_normalization": "divide by total cleaned intensity before top-50, then sqrt",
+    "feature_input": "raw DENS7 values with log1p(n_clean) only"
+  },
+  "model_type": "RandomForestClassifier",
+  "model_params": {
+    "n_estimators": 400,
+    "max_depth": 4,
+    "min_samples_leaf": 5,
+    "class_weight": "balanced",
+    "random_state": 0,
+    "n_jobs": 1
+  },
+  "training": {
+    "dataset": "NIST positive-ion hard negatives (2026-10-29)",
+    "n_spectra": 1353,
+    "n_pt": 672,
+    "n_negative": 681,
+    "negative_structures": 181,
+    "pt_structures": 672,
+    "ratio_neg_to_pos": 1.01,
+    "negative_classes": {
+      "pentacyclic_triterpenoid": 359,
+      "tetracyclic_triterpenoid": 317,
+      "macrocyclic_polyketide": 5
+    },
+    "adducts": {
+      "[M+H]+": 611,
+      "[M+Na]+": 70
+    },
+    "metadata": "all ESI positive, HCD, CE 20-60 eV"
+  },
+  "cross_validation": {
+    "scheme": "5-fold x 5-repeat StratifiedGroupKFold, grouped by InChIKey",
+    "auc_mean": 0.9572713446612126,
+    "auc_sd": 0.00037370420947809615,
+    "ap_mean": 0.9613292640560687,
+    "ap_sd": 0.0001961360019091107,
+    "accuracy_mean": 0.8894308943089431,
+    "accuracy_sd": 0.0029378576370068924,
+    "pt_recall_mean": 0.8982142857142857,
+    "neg_specificity_mean": 0.8807635829662261
+  },
+  "error_profile_at_0.5": {
+    "false_positive_rate": 0.112,
+    "false_positive_count": 76,
+    "negative_count": 681,
+    "by_class": {
+      "pentacyclic_triterpenoid": "28/359 (7.8%)",
+      "tetracyclic_triterpenoid": "45/317 (14.2%)",
+      "macrocyclic_polyketide": "3/5 (60%, n=5; unstable)"
+    },
+    "note": "Mean OOF probability at threshold 0.5."
+  },
+  "intended_use": [
+    "Primary delivery model for NIST-like positive-ion MS/MS data.",
+    "First-stage PT/non-PT screening when the sample and acquisition conditions resemble the NIST library domain."
+  ],
+  "limitations": [
+    "False positives concentrate in tetracyclic triterpenoids (14.2%).",
+    "Macrocyclic polyketide support is only 5 spectra from 1 structure; its 60% rate is not a stable estimate.",
+    "NIST is a library collection; spectra were not acquired as one batch, so batch effects are not removed.",
+    "Not validated on PT data with recorded ion source, collision energy or instrument metadata."
+  ],
+  "environment": {
+    "python": "3.12.14",
+    "scikit_learn": "1.5.2",
+    "numpy": "2.3.5",
+    "joblib": "1.6.0"
+  },
+  "data_redistribution": "Training spectra are not included. NIST, GNPS and MoNA data remain subject to their own terms.",
+  "checkpoint_file": "dens7_rf_nist.joblib",
+  "sha256": "60365c8f7d0c3ed1c63c1a6a9708877c5547bdfa8ff90830e215b0bc27950949",
+  "file_size_bytes": 396124
+}
